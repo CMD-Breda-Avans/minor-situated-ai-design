@@ -3,20 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minor Situated AI Design</title>
+    <title>Situated AI Design | Admission Scan</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f4; }
-        .container { text-align: center; background: white; padding: 3rem; border-radius: 10px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #333; }
-        a { color: #007bff; text-decoration: none; font-weight: bold; }
-        a:hover { text-decoration: underline; }
+        body {
+            background: #000;
+            color: #0dff00;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #scanner-container {
+            position: relative;
+            width: 80%;
+            max-width: 640px;
+            border: 2px solid #0dff00;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+            filter: grayscale(100%) contrast(150%);
+        }
+
+        /* De scan-lijn */
+        #scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #0dff00;
+            box-shadow: 0 0 15px #0dff00;
+            animation: scan 3s infinite linear;
+            display: none;
+        }
+
+        /* Het zwevende 'face' kader */
+        #target-box {
+            position: absolute;
+            border: 2px solid #0dff00;
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        #status-text {
+            margin-top: 20px;
+            text-transform: uppercase;
+            text-align: center;
+            height: 1.2em;
+        }
+
+        button {
+            background: transparent;
+            color: #0dff00;
+            border: 2px solid #0dff00;
+            padding: 10px 20px;
+            font-family: inherit;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        button:hover {
+            background: #0dff00;
+            color: #000;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        .overlay-label {
+            position: absolute;
+            font-size: 0.8rem;
+            background: #000;
+            padding: 2px 5px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Situated AI Design</h1>
-        <p>De website voor de Minor Situated AI Design is in aanbouw.</p>
-        <p><a href="https://www.kiesopmaat.nl/modules/avans/ACI/145231/">Bekijk de module op Kies op Maat</a></p>
+
+    <h1>SITUATED AI ADMISSION</h1>
+    
+    <div id="scanner-container">
+        <video id="webcam" autoplay playsinline></video>
+        <div id="scan-line"></div>
+        <div id="target-box">
+            <span class="overlay-label" style="top: -20px; left: 0;">SUBJECT_SCAN_01</span>
+        </div>
     </div>
+
+    <div id="status-text">Wachten op initiatie...</div>
+    <br>
+    <button id="start-btn">START TOELATINGSSCAN</button>
+
+    <script>
+        const video = document.getElementById('webcam');
+        const startBtn = document.getElementById('start-btn');
+        const scanLine = document.getElementById('scan-line');
+        const targetBox = document.getElementById('target-box');
+        const statusText = document.getElementById('status-text');
+
+        const phrases = [
+            "Lokaliteit analyseren...",
+            "Menselijke frictie gedetecteerd",
+            "Big Tech bias verwijderen...",
+            "Agency niveau: 84% en stijgend",
+            "Materiële context kalibreren...",
+            "Gedragspatronen valideren...",
+            "Non-universele intelligentie gevonden",
+            "Status: Rommelig maar functioneel"
+        ];
+
+        startBtn.onclick = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                startBtn.style.display = 'none';
+                scanLine.style.display = 'block';
+                targetBox.style.display = 'block';
+                
+                runSimulation();
+            } catch (err) {
+                statusText.innerText = "Error: Camera toegang geweigerd.";
+            }
+        };
+
+        function runSimulation() {
+            let i = 0;
+            const interval = setInterval(() => {
+                statusText.innerText = phrases[i % phrases.length];
+                i++;
+                
+                // Laat het kader een beetje 'nerveus' bewegen voor de illusie
+                targetBox.style.left = (50 + (Math.random() * 4 - 2)) + '%';
+                targetBox.style.top = (50 + (Math.random() * 4 - 2)) + '%';
+
+                if (i > 15) {
+                    clearInterval(interval);
+                    completeScan();
+                }
+            }, 600);
+        }
+
+        function completeScan() {
+            scanLine.style.animation = 'none';
+            scanLine.style.background = 'white';
+            statusText.innerHTML = "<span style='color: white;'>TOEGELATEN: Situated Designer gedetecteerd.</span><br><br><a href='#' style='color: #0dff00;'>Download je Situated Passport</a>";
+        }
+    </script>
 </body>
 </html>
